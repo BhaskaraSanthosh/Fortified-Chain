@@ -1,0 +1,97 @@
+const E:Function;
+const D:Function;
+hashfunction H;
+const XOR:Function;
+const POW:Function;
+usertype key;
+const APN:Function;
+const RIa,RIb,PUa,PUb,PUedge,IDdev,IDhc,RNhc,PRa,DIsigb,SIid,GIid,Q1,V1,V3,IDa;
+
+const Hdev,RIa1,RIa;
+
+macro Hdev = H(IDdev);
+
+macro RIa1 = XOR(RNhc,Hdev,IDhc);
+
+macro RIa = H(RIa1);
+
+
+protocol Fortified-Chain2(DeviceA,Edge,DeviceB)
+{
+role DeviceA {
+fresh RN:Nonce;
+const IDdev,DIsig,MATdiv,IDa;
+fresh RNa:Nonce;
+const msg,DIsigb,P1,RIa,PRa,IDa;
+const Temp,Temp1;
+fresh PRa,PUedge,PUa:key;
+fresh SessionKey,Timestamp:key;
+const V0,V1,V2,V3,V4;
+recv_!2(Edge,DeviceA,P1);
+
+recv_!4(DeviceB,DeviceA,Q1);
+
+macro V0 = E(PUedge,H(IDdev));
+macro Temp = H(RIa);
+macro Temp1 = E(PRa,Temp);
+macro DIsig = APN(Temp1,RIa);
+macro V1 = E(PUb,RNa,MATdiv,IDa,DIsig);
+macro V2 = D(PRa,SessionKey,IDb,DIsigb,Timestamp);
+macro V3 = E(SessionKey,msg);
+macro V4 =  D(PRa,IDa,RIa,GIid,SIid,MATdiv);
+
+send_!1(DeviceA,Edge,V0);
+send_!5(DeviceA,DeviceB,V1,V3);
+claim_DeviceA2(DeviceA,Secret,SessionKey);
+claim_DeviceA3(DeviceA,Niagree);
+claim_DeviceA4(DeviceA, Nisynch);
+}
+role Edge {
+fresh PRedge,PUedge,PUa,PUb:key;
+fresh RNhc,MATdiv,GIid,SIid:Nonce;
+const IDhc,RIa,IDa,RIa1,Hdev,MATdivb,MATdiv,RIb,IDb;
+const P0,P1,P2;
+const IDdev;
+recv_!1(DeviceA,Edge,V0);
+
+macro P0 = D(PRedge,H(IDdev));
+macro Hdev = H(IDdev);
+macro RIa1 = XOR(RNhc,Hdev,IDhc);
+macro RIa = H(RIa1);
+macro IDa = XOR(RIa,Hdev);
+macro  P1 = E(PUa,IDa,RIa,GIid,SIid,MATdiv);
+macro P2 = E(PUb,IDb,RIb,GIid,SIid,MATdivb);
+send_!2(Edge,DeviceA,P1);
+send_!3(Edge,DeviceB,P2);
+claim_Edge2(Edge,Secret,PRedge);
+claim_Edge3(Edge,Niagree);
+claim_Edge4(Edge,Nisynch);
+}
+
+role DeviceB {
+fresh PRb,PUedge,PUa,PUb,DIsigb:key;
+fresh RNb:Nonce;
+const IDdevb,DIsigb,MATdivb,Q1,Q2,Q3,Q4,MATdivb,MATdiv,IDb;
+fresh RIb,RIa,RNb:Nonce;
+const Temp2,Temp3,msg,RNa;
+fresh SessionKey,Timestamp:key;
+recv_!3(Edge,DeviceB,P2);
+
+recv_!5(DeviceA,DeviceB,V1,V3);
+
+macro Temp3 = D(PUa,DIsig);
+macro Temp2 = H(RIa); 
+
+macro Q2 = D(PRb,IDb,RIb,GIid,SIid,MATdivb);
+macro Q3 = D(PUb,RNa,MATdiv,IDa,DIsig);
+match(MATdiv,MATdivb);
+match(Temp2,Temp3);
+macro SessionKey = POW(RNa,RNb);
+macro Q1 = E(PUa,SessionKey,IDb,DIsigb,Timestamp);
+macro Q4 = D(SessionKey,msg);
+send_!4(DeviceB,DeviceA,Q1);
+claim_DeviceB2(DeviceB,Secret,msg);
+claim_DeviceB3(DeviceB,Niagree);
+claim_DeviceB4(DeviceB, Nisynch);
+}
+}
