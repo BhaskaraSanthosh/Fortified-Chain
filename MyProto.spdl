@@ -16,7 +16,7 @@ macro RIa1 = XOR(RNhc,Hdev,IDhc);
 macro RIa = H(RIa1);
 
 
-protocol MyProto(DA,Hybrid,DB)
+protocol CoVID19(DA,Lead,DB)
 {
 role DA {
 fresh RN:Nonce;
@@ -27,7 +27,7 @@ const Temp,Temp1;
 fresh PRa,PUedge,PUa:key;
 fresh SessionKey,Timestamp:key;
 const V0,V1,V2,V3,V4;
-recv_!2(Hybrid,DA,P1);
+recv_!2(Lead,DA,P1);
 
 recv_!4(DB,DA,Q1);
 
@@ -40,19 +40,19 @@ macro V2 = D(PRa,SessionKey,IDb,DIsigb,Timestamp);
 macro V3 = E(SessionKey,msg);
 macro V4 =  D(PRa,IDa,RIa,GIid,SIid,MATdiv);
 
-send_!1(DA,Hybrid,V0);
+send_!1(DA,Lead,V0);
 send_!5(DA,DB,V1,V3);
 claim_DA2(DA,Secret,SessionKey);
 claim_DA3(DA,Niagree);
 claim_DA4(DA, Nisynch);
 }
-role Hybrid {
+role Lead {
 fresh PRedge,PUedge,PUa,PUb:key;
 fresh RNhc,MATdiv,GIid,SIid:Nonce;
 const IDhc,RIa,IDa,RIa1,Hdev,MATdivb,MATdiv,RIb,IDb;
 const P0,P1,P2;
 const IDdev;
-recv_!1(DA,Hybrid,V0);
+recv_!1(DA,Lead,V0);
 
 macro P0 = D(PRedge,H(IDdev));
 macro Hdev = H(IDdev);
@@ -61,11 +61,11 @@ macro RIa = H(RIa1);
 macro IDa = XOR(RIa,Hdev);
 macro  P1 = E(PUa,IDa,RIa,GIid,SIid,MATdiv);
 macro P2 = E(PUb,IDb,RIb,GIid,SIid,MATdivb);
-send_!2(Hybrid,DA,P1);
-send_!3(Hybrid,DB,P2);
-claim_Hybrid2(Hybrid,Secret,PRedge);
-claim_Hybrid3(Hybrid,Niagree);
-claim_Hybrid4(Hybrid,Nisynch);
+send_!2(Lead,DA,P1);
+send_!3(Lead,DB,P2);
+claim_Lead2(Lead,Secret,PRedge);
+claim_Lead3(Lead,Niagree);
+claim_Lead4(Lead,Nisynch);
 }
 
 role DB {
@@ -75,7 +75,7 @@ const IDdevb,DIsigb,MATdivb,Q1,Q2,Q3,Q4,MATdivb,MATdiv,IDb;
 fresh RIb,RIa,RNb:Nonce;
 const Temp2,Temp3,msg,RNa;
 fresh SessionKey,Timestamp:key;
-recv_!3(Hybrid,DB,P2);
+recv_!3(Lead,DB,P2);
 
 recv_!5(DA,DB,V1,V3);
 
